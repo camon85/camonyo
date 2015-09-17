@@ -1,11 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>camonyo</title>
+    <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <div id='mapDiv'></div>
+    <script>
+      var maps = new Firebase('https://crackling-inferno-7919.firebaseio.com/maps/');
+
+      maps.on('child_added', function(snapshot) {
+        var map = snapshot.val();
+        debugger;
+        console.log(map);
+        displayMap(map);
+      });
+      function displayMap(map) {
+        $('<div/>').text(map.name).prepend($('<em/>').text(map.ownerId+': ')).appendTo($('#mapDiv'));
+        $('#mapDiv')[0].scrollTop = $('#mapDiv')[0].scrollHeight;
+      };
+    </script>
   </body>
 </html>
