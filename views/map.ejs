@@ -1,142 +1,104 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>[<%= mapId %>]</title>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
-    <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
-    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
-  </head>
-  <body>
-    <div id="map"></div>
-    <div id='messagesDiv'></div>
-    <input type='text' id='nameInput' placeholder='Name'>
-    <input type='text' id='messageInput' placeholder='Message'>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATvoQ3cUVMoVKggJBh9WYScvaW8d759H0"></script>
-    <script>
-      var mapRef = new Firebase('https://crackling-inferno-7919.firebaseio.com/maps/' + '<%= mapId %>');
-      var messageRef = mapRef.child('messages');
+    <head>
+        <title>[<%= mapId %>]</title>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
+        <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    </head>
+    <body>
+        <div id="map"></div>
+        <div id='messagesDiv'></div>
+        <input type='text' id='nameInput' placeholder='Name'>
+        <input type='text' id='messageInput' placeholder='Message'>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATvoQ3cUVMoVKggJBh9WYScvaW8d759H0"></script>
+        <script>
+        var mapRef = new Firebase('https://crackling-inferno-7919.firebaseio.com/maps/' + '<%= mapId %>');
+        var messageRef = mapRef.child('messages');
 
-      $('#messageInput').keypress(function (e) {
+        $('#messageInput').keypress(function (e) {
         if (e.keyCode == 13) {
-          var name = $('#nameInput').val();
-          var text = $('#messageInput').val();
-          messageRef.push({name: name, text: text});
-          $('#messageInput').val('');
+            var name = $('#nameInput').val();
+            var text = $('#messageInput').val();
+            messageRef.push({name: name, text: text});
+            $('#messageInput').val('');
         }
-      });
+        });
 
-      messageRef.on('child_added', function(snapshot) {
-        var message = snapshot.val();
-        displayChatMessage(message.name, message.text);
-      });
+        messageRef.on('child_added', function(snapshot) {
+            var message = snapshot.val();
+            displayChatMessage(message.name, message.text);
+        });
 
-//      messageRef.orderByChild('name').equalTo('doffy').on('child_added', function(snapshot) {
-//        var message = snapshot.val();
-//        displayChatMessage(message.name, message.text);
-//      });
-
-      function displayChatMessage(name, text) {
-        $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
-        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
-      };
+        function displayChatMessage(name, text) {
+            $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+            $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+        };
 
 
 //==================================================================
 //  MAP 관련
 //==================================================================
-      var name;
-      var lat;
-      var lng;
+        mapRef.once('value', function(snapshot) {
+            var data = snapshot.exportVal();
+            console.log(data);
 
-      mapRef.once('value', function(snapshot) {
-        snapshot.forEach(function(childSnapshot) {
-          var key = childSnapshot.key();
-          if(key == 'name') {
-            name = childSnapshot.val();
-          } else if(key == 'lat') {
-            lat = childSnapshot.val();
-          } else if(key == 'lng') {
-            lng = childSnapshot.val();
-          }
+            //        snapshot.forEach(function(childSnapshot) {
+            //          var key = childSnapshot.key();
+            //          if(key == 'name') {
+            //            name = childSnapshot.val();
+            //          } else if(key == 'lat') {
+            //            lat = childSnapshot.val();
+            //          } else if(key == 'lng') {
+            //            lng = childSnapshot.val();
+            //          }
+            //        });
+
+            // 구글맵 초기화
+            initMap(data);
         });
 
-        console.log('name='+name);
-        console.log('lat='+lat);
-        console.log('lng='+lng);
+        var map;
 
-        // 구글맵 초기화
-        initMap();
-      });
+        function initMap(data) {
+            var pos = {
+                lat: parseFloat(data.lat),
+                lng: parseFloat(data.lng)
+            };
 
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: pos,
+                zoom: 15
+            });
 
+            var infoWindow = new google.maps.InfoWindow({map: map});
+            infoWindow.setPosition(pos);
+            infoWindow.setContent(data.name);
+            //        map.setCenter(pos)
 
-      var dmcStation = {lat: 37.575313, lng: 126.900000};
-      var enm = {lat: 37.578308, lng: 126.891684};
-      var starbucks = {lat:37.581594, lng: 126.890530};
-
-      var locations = [];
-      locations.push(dmcStation);
-      locations.push(enm);
-      locations.push(starbucks);
-
-      var map;
-
-      function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: dmcStation,
-          zoom: 15
-        });
-
-        var infoWindow = new google.maps.InfoWindow({map: map});
-        var pos = {
-          lat: parseFloat(lat),
-          lng: parseFloat(lng)
-        };
-        infoWindow.setPosition(pos);
-        map.setCenter(pos)
-        infoWindow.setContent(name);
-
-        // Try HTML5 geolocation.
-//        if (navigator.geolocation) {
-//          navigator.geolocation.getCurrentPosition(function(position) {
-//            var pos = {
-//                lat: position.coords.latitude,
-//                lng: position.coords.longitude
-//            };
-//
-//            infoWindow.setPosition(pos);
-//            infoWindow.setContent('현재위치');
-//            map.setCenter(pos)
-//          }, function() {
-//            handleLocationError(true, infoWindow, map.getCenter());
-//          });
-//        } else {
-//          // Browser doesn't support Geolocation
-//          handleLocationError(false, infoWindow, map.getCenter());
-//        }
-
-        showMakers();
-      }
-
-      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-        infoWindow.setPosition(pos);
-        infoWindow.setContent(browserHasGeolocation ?
-                'Error: The Geolocation service failed.' :
-                'Error: Your browser doesn\'t support geolocation.');
-      }
-
-      function showMakers() {
-        for(var locationIndex in locations) {
-          showMaker(locations[locationIndex]);
+            showMakers();
         }
-      }
 
-      function showMaker(pos) {
-        var marker = new google.maps.Marker({map: map, position: pos});
-      }
+        function showMakers() {
+            var dmcStation = {lat: 37.575313, lng: 126.900000};
+            var enm = {lat: 37.578308, lng: 126.891684};
+            var starbucks = {lat:37.581594, lng: 126.890530};
+
+            var locations = [];
+            locations.push(dmcStation);
+            locations.push(enm);
+            locations.push(starbucks);
+
+            for(var locationIndex in locations) {
+                showMaker(locations[locationIndex]);
+            }
+        }
+
+        function showMaker(pos) {
+            var marker = new google.maps.Marker({map: map, position: pos});
+        }
     </script>
-
   </body>
 </html>

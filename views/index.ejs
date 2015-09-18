@@ -2,13 +2,16 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
   </head>
   <body>
     <div id='mapDiv'></div>
+    <button>생성</button>
     <script>
+      //osakaCastle = 34.687099, 135.526099
+      //dotonbori = 34.669028, 135.502692
+
       var mapsRef = new Firebase('https://crackling-inferno-7919.firebaseio.com/maps/');
 
       mapsRef.on('child_added', function(snapshot) {
