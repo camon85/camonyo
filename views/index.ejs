@@ -9,12 +9,11 @@
   <body>
     <div id='mapDiv'></div>
     <script>
-      var maps = new Firebase('https://crackling-inferno-7919.firebaseio.com/maps/');
+      var mapsRef = new Firebase('https://crackling-inferno-7919.firebaseio.com/maps/');
 
-      maps.on('child_added', function(snapshot) {
+      mapsRef.on('child_added', function(snapshot) {
         var mapKey = snapshot.key();
         var mapVal = snapshot.val();
-        debugger;
         displayMap(mapKey, mapVal);
       });
 
@@ -22,7 +21,6 @@
         var mapUrl = location.href + 'maps/' + mapKey;
         $map = $('<a/>').text(mapVal.name).attr('href', mapUrl);
         $('<div>').prepend($map).appendTo('#mapDiv');
-
       };
     </script>
   </body>
