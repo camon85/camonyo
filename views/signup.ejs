@@ -18,10 +18,19 @@
             data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email"> </span>
         </span>
 
-        <form id="frm" method="post" action="login">
-            <input type="hidden" name="id" id="id" readonly="readonly">
-            <input type="hidden" name="email" id="email" readonly="readonly">
-            <input type="hidden" name="nickName" id="nickName" readonly="readonly">
+        <form id="frm" method="post" action="signup">
+            <div>
+                <label>ID</label><input type="text" name="id" id="id" readonly="readonly">
+            </div>
+            <div>
+                <label>email</label><input type="text" name="email" id="email" readonly="readonly">
+            </div>
+            <div>
+                <label>nickName</label><input type="text" name="nickName" id="nickName">
+            </div>
+            <div>
+                <input type="submit" value="완료"/>
+            </div>
         </form>
 
         <!-- 이 비동기 자바스크립트를 </body> 태그 앞에 배치 -->
@@ -53,7 +62,6 @@
                         $('#id').val(resp.result.id);
                         $('#email').val(resp.result.emails[0].value);
                         $('#nickName').val(resp.result.displayName);
-                        $('#frm').submit();
                     }, function(reason) {
                         console.log('Error: ' + reason.result.error.message);
                     });
