@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= title %></title>
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+        <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+        <script src='/bower_components/jquery/dist/jquery.js'></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <span id="signinButton">
+        <span class="g-signin"
+            data-callback="signinCallback"
+            data-clientid="33608635956-ojn541i1nsbgd3m9c3v22h20mrql43f8.apps.googleusercontent.com"
+            data-cookiepolicy="single_host_origin"
+            data-requestvisibleactions="http://schemas.google.com/AddActivity"
+            data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email"> </span>
+        </span>
+
+        <form id="frm" method="post" action="login-process">
+            <div>
+                <label>ID</label><input type="text" name="id" id="id" readonly="readonly">
+            </div>
+            <div>
+                <label>email</label><input type="text" name="email" id="email" readonly="readonly">
+            </div>
+            <div>
+                <label>nickName</label><input type="text" name="nickName" id="nickName">
+            </div>
+            <div>
+                <input type="submit" value="완료"/>
+            </div>
+        </form>
+
+        <!-- 이 비동기 자바스크립트를 </body> 태그 앞에 배치 -->
+        <script type="text/javascript">
+            function signinCallback(authResult) {
+                console.log(authResult);
+
+                if (authResult['access_token']) {
+                    $('#signinButton').hide();
+                    googleApiCall();
+                } else if (authResult['error']) {
+                    if (authResult['error'] == 'immediate_failed') {
+                        console.log('사용자가 자동으로 로그인할 수 없음');
+                    } else if (authResult['error'] == 'access_denied') {
+                        console.log('사용자가 앱에 대한 액세스 거부');
+                    } else {
+                        console.log('알 수 없는 오류');
+                    }
+                }
+            }
+
+            function googleApiCall() {
+                gapi.client.load('plus', 'v1').then(function() {
+                    var request = gapi.client.plus.people.get({
+                        'userId': 'me'
+                    });
+
+                    request.then(function(resp) {
+                        $('#id').val(resp.result.id);
+                        $('#email').val(resp.result.emails[0].value);
+                        $('#nickName').val(resp.result.displayName);
+                    }, function(reason) {
+                        console.log('Error: ' + reason.result.error.message);
+                    });
+                });
+            }
+
+            (function() {
+                var po = document.createElement('script');
+                po.type = 'text/javascript';
+                po.async = true;
+                po.src = 'https://apis.google.com/js/client:plusone.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(po, s);
+            })();
+        </script>
+    </body>
+</html>

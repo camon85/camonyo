@@ -10,7 +10,8 @@
   </head>
   <body>
     <div id='mapDiv'></div>
-    <button>생성</button>
+    <button>지도 생성</button>
+    <button id="login">회원가입 / 로그인</button>
     <script>
       //osakaCastle = 34.687099, 135.526099
       //dotonbori = 34.669028, 135.502692
@@ -20,14 +21,18 @@
       mapsRef.on('child_added', function(snapshot) {
         var mapKey = snapshot.key();
         var mapVal = snapshot.val();
-        displayMap(mapKey, mapVal);
+        displayMapList(mapKey, mapVal);
       });
 
-      function displayMap(mapKey, mapVal) {
+      function displayMapList(mapKey, mapVal) {
         var mapUrl = location.href + 'maps/' + mapKey;
         $map = $('<a/>').text(mapVal.name).attr('href', mapUrl);
         $('<div>').prepend($map).appendTo('#mapDiv');
       };
+
+      $('#login').on('click', function() {
+        location.href = '/login';
+      });
     </script>
   </body>
 </html>
