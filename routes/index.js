@@ -4,7 +4,6 @@ var users = require('../lib/users');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  errorrrrr
   res.render('index', { title: 'camonyo' });
 });
 
