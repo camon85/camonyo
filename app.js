@@ -61,7 +61,7 @@ app.use(function(err, req, res, next) {
   });
 
   // tweet
-  twitterClient.post('statuses/update', {status: "[camonyo] " + err.stack},  function(error, tweet, response){
+  twitterClient.post('statuses/update', {status: "[camonyo] " + err},  function(error, tweet, response){
     if(error) throw error;
   });
 });
