@@ -4,8 +4,14 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
 var routes = require('./routes/index');
+var Twitter = require('twitter');
+var twitterClient = new Twitter({
+  consumer_key: 'qStcdiUWpMQ0tYOW2HzRxuCgZ',
+  consumer_secret: 'Vyp7GiyIjNVFe80RgsCogPyp4WpYG4rIPd7rdMIPtGVLqQVzeY',
+  access_token_key: '3756323599-1bYOGaeCydmcjJDuKBq4rMPHuRj4gS2K80OpFsm',
+  access_token_secret: '1o1brMevX2G7vS5ha8TBSBiz5FSGRGhtBLXvjS33IxiRm'
+});
 
 var app = express();
 
@@ -52,6 +58,11 @@ app.use(function(err, req, res, next) {
   res.render('error', {
     message: err.message,
     error: {}
+  });
+
+  // tweet
+  twitterClient.post('statuses/update', {status: "[camonyo] " + err},  function(error, tweet, response){
+    if(error) throw error;
   });
 });
 
